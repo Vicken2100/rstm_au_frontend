@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.btn-add {
+  @apply px-3 py-2 mb-0 bg-[#E7C057] text-white font-semibold text-sm rounded-md shadow-md hover:bg-[#f3ce68] transition duration-300;
+}
+
+.btn-batal {
+  @apply px-3 py-2 mb-0 bg-white border border-gray-300 text-black text-sm rounded-md hover:bg-gray-100 transition duration-300;
+}
+
+.input {
+  @apply p-2 border border-gray-200 rounded-md text-sm;
+}
+
+.label-input {
+  @apply text-black mb-2 mt-1 font-semibold;
+}
+
+.btn-simpan {
+  @apply px-3 py-2 mb-0 bg-[#E7C057] text-white font-semibold text-sm rounded-md hover:bg-[#f3ce68] transition duration-300;
+}
+
+.detail {
+  @apply py-1 px-3 text-gray-200 text-xs bg-[#424242] hover:bg-[#2c2c2c] border border-gray-600 rounded;
+}
+.edit {
+  @apply py-1 px-3 text-gray-200 text-xs bg-[#424242] hover:bg-[#2c2c2c] border border-gray-600 rounded;
+}
+
+.delete {
+  @apply py-1 px-3 text-gray-200 text-xs bg-[#424242] hover:bg-[#2c2c2c] border border-gray-600 rounded;
+}
+
+.inp-res {
+  @apply bg-[#D5F2CB] w-full rounded-lg px-2 py-1 focus:outline-none border border-gray-500
+}
