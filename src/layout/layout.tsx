@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import logoApk from "../../img/iconApk.png";
 import { IoPersonCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
+import { USER_ACCESS_TOKEN } from "../constants/token";
 
 export function Component() {
+    useEffect(() => {
+        const accessToken = Cookies.get(USER_ACCESS_TOKEN);
+
+        if (!accessToken) {
+            window.location.href = "/login";
+        }
+    }, []);
+
     return (
         <React.Fragment>
             <div className="w-full fixed top-0 z-30 bg-white">

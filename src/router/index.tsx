@@ -15,6 +15,10 @@ export const router: RouteObject[] = [
                 path: "/DataKaryawan",
                 lazy: () => import("../pages/data-karyawan"),
             },
+            {
+                path: "/Pengaturan",
+                lazy: () => import("../pages/pengaturan"),
+            },
         ],
     },
     {
