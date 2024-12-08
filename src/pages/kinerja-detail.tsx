@@ -134,7 +134,8 @@ export function Component(): JSX.Element {
                 <div className="w-full mt-16 px-5 h-screen relative">
                     {/* Jika selectedData ada, tampilkan nama, jika tidak tampilkan pesan */}
                     <p className="font-bold text-2xl">
-                        Presensi: <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">Suryanto</span>{" "}
+                        Penilaian kinerja:{" "}
+                        <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">Suryanto</span>{" "}
                     </p>
                     <div className="flex w-full gap-1 justify-between">
                         <div className="">
