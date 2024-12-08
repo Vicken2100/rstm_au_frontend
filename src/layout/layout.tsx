@@ -1,12 +1,21 @@
 import React, { useEffect } from "react";
 // import logoApk from "../../img/iconApk.png";
 import { IoPersonCircle } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 import { USER_ACCESS_TOKEN } from "../constants/token";
 
 export function Component() {
+    const { pathname, search } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }, [pathname, search]);
+
     useEffect(() => {
         const accessToken = Cookies.get(USER_ACCESS_TOKEN);
 

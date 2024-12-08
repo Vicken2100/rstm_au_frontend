@@ -11,3 +11,22 @@ export interface LoginResult extends UsersResult {
         refreshToken: string;
     };
 }
+
+export interface RegisterPayload {
+    username: string;
+    birthDate: string;
+    isMale: boolean;
+    nik: string;
+    noTelp: string;
+    namaBank: string;
+    noRek: string;
+    namaRekening: string;
+    alamatProvinsi: string;
+    alamatKota: string;
+    alamatKecamatan: string;
+    jabatan: string;
+    dateIn: string;
+    email: string;
+    password: string;
+    pin: number;
+}

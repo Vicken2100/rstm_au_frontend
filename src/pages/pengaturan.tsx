@@ -12,6 +12,8 @@ import { JabatanGajiResult } from "../dto/jabatan-gaji.dto";
 import { UangLemburResult } from "../dto/uang-lembur.dto";
 import { UangMakanResult } from "../dto/uang-makan.dto";
 import { deleteBonusApi, getBonusApi } from "../api/bonus";
+import { PenilaianResult } from "../dto/penilaian.dto";
+import { getPenilaianApi, updatePenilaianApi } from "../api/penilaian";
 
 export function Component(): JSX.Element {
     const [OpenPopUpBonus, SetOpenPopUpBonus] = useState(false);
@@ -87,11 +89,35 @@ export function Component(): JSX.Element {
         loadApi();
     }, []);
 
-    const evaluationIndicators = [
-        { indicator: "Jam Mulai Kerja", percentage: "20" },
-        { indicator: "Jam Selesai Kerja", percentage: "40" },
-        { indicator: "Kehadiran", percentage: "60" },
-    ];
+    const [evaluationIndicators, setEvaluationIndicator] = useState<PenilaianResult[]>([]);
+
+    useEffect(() => {
+        const loadApi = async () => {
+            const response = await getPenilaianApi();
+
+            setEvaluationIndicator(response);
+        };
+
+        loadApi();
+    }, []);
+
+    const handleIndicatorChange = (index: number, field: keyof PenilaianResult, value: string) => {
+        const updateIndicator = [...evaluationIndicators];
+
+        if (field === "indicator") {
+            updateIndicator[index][field] = value;
+        } else {
+            const numericValue = Number(value.replace(/[^\d]/g, ""));
+            updateIndicator[index][field] = numericValue;
+        }
+
+        setEvaluationIndicator(updateIndicator);
+    };
+
+    const saveIndicator = async () => {
+        await updatePenilaianApi(evaluationIndicators);
+        window.location.reload();
+    };
 
     return (
         <div>
@@ -340,6 +366,9 @@ export function Component(): JSX.Element {
                                                     type="text"
                                                     value={indicator.percentage}
                                                     className="w-12 px-2 py-1 border rounded mr-1"
+                                                    onChange={(e) =>
+                                                        handleIndicatorChange(index, "percentage", e.target.value)
+                                                    }
                                                 />{" "}
                                                 %
                                             </td>
@@ -349,7 +378,10 @@ export function Component(): JSX.Element {
                             </table>
                         </div>
                         <div className="mt-4 flex justify-end">
-                            <button className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-700">
+                            <button
+                                onClick={saveIndicator}
+                                className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-700"
+                            >
                                 Simpan
                             </button>
                         </div>
