@@ -3,6 +3,7 @@ import { Footer } from "../component/footer";
 import { useEffect, useState } from "react";
 import { PresensiStats } from "../dto/presensi.dto";
 import { getStatsInformationApi } from "../api/presensi";
+import { View } from "lucide-react";
 
 export function Component(): JSX.Element {
     const [jabatan, setJabatan] = useState<string | null>("");
@@ -96,9 +97,11 @@ export function Component(): JSX.Element {
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             <Link
                                                 to={`/Kinerja/${item.userName}`}
-                                                className="bg-[#DEFABB] p-1 rounded-md border border-gray-500 "
+                                                className=" flex justify-center
+                                        text-green-500
+                                        hover:text-blue-500 "
                                             >
-                                                Tampilkan
+                                                <View size={25} />
                                             </Link>
                                         </td>
                                     </tr>

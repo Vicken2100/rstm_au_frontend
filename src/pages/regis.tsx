@@ -218,12 +218,12 @@ export function Component(): JSX.Element {
                                                         className="inp-res"
                                                         type="number"
                                                         name="pin"
-                                                        placeholder="Pin Alternatif"
+                                                        placeholder="Pilih Angka 1-99"
                                                         value={formData.pin || ""}
                                                         onChange={handleChange}
                                                     />
-                                                    <p className="text-sm text-end m-0">Harus 6 digit</p>
-                                                    <p>Isi PIN alternatif untuk menggantikan sidik jari.</p>
+                                                    <p className="text-sm text-end m-0">Masukkan Rangge Angka 1-99</p>
+                                                    <p>Pastikan Angka yang di isi tidak sama dengan Karyawan lain</p>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <button

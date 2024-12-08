@@ -6,6 +6,7 @@ import { Footer } from "../component/footer";
 import { Link } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { View } from "lucide-react";
 
 export function Component(): JSX.Element {
     const [jabatan, setJabatan] = useState<string>("");
@@ -240,9 +241,11 @@ export function Component(): JSX.Element {
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             <Link
                                                 to={`/penggajian/${item.userName}`}
-                                                className="bg-[#DEFABB] p-1 rounded-md border border-gray-500"
+                                                className=" flex justify-center
+                                        text-green-500
+                                        hover:text-blue-500 "
                                             >
-                                                Tampilkan
+                                                <View size={25} />
                                             </Link>
                                         </td>
                                     </tr>
