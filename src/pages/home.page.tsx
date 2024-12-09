@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Footer } from "../component/footer";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { USER_ACCESS_TOKEN } from "../constants/token";
 
 export function Component() {
+    const token = Cookies.get(USER_ACCESS_TOKEN);
+
+    if (!token) {
+        return <Navigate to={"/login"} />;
+    }
+    const auth = jwtDecode(token) as { data: { email: string } };
+
     return (
         <div className="relative w-full">
             <img className="w-full bg-fixed top-0 object-cover" src={"/bg-home.png"} alt="Background" />
@@ -64,24 +74,30 @@ export function Component() {
                                 <p className="text-center">Penggajian</p>
                             </div>
                         </Link>
-                        <Link
-                            to={"/DataKaryawan"}
-                            className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-                        >
-                            <div className="flex flex-col justify-center items-center w-full">
-                                <img className="mb-2" src={"/data-karyawan.png"} alt="Data Karyawan" />
-                                <p className="text-center">Data Karyawan</p>
-                            </div>
-                        </Link>
-                        <Link
-                            to={"/Pengaturan"}
-                            className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-                        >
-                            <div className="flex flex-col justify-center items-center w-full">
-                                <img className="mb-2" src={"/pengaturan.png"} alt="Pengaturan" />
-                                <p className="text-center">Pengaturan</p>
-                            </div>
-                        </Link>
+                        {auth.data.email === "admin" ? (
+                            <>
+                                <Link
+                                    to={"/DataKaryawan"}
+                                    className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                                >
+                                    <div className="flex flex-col justify-center items-center w-full">
+                                        <img className="mb-2" src={"/data-karyawan.png"} alt="Data Karyawan" />
+                                        <p className="text-center">Data Karyawan</p>
+                                    </div>
+                                </Link>
+                                <Link
+                                    to={"/Pengaturan"}
+                                    className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                                >
+                                    <div className="flex flex-col justify-center items-center w-full">
+                                        <img className="mb-2" src={"/pengaturan.png"} alt="Pengaturan" />
+                                        <p className="text-center">Pengaturan</p>
+                                    </div>
+                                </Link>
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
             </div>
