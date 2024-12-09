@@ -1,13 +1,21 @@
 import React, { useEffect } from "react";
 // import logoApk from "../../img/iconApk.png";
 import { IoPersonCircle } from "react-icons/io5";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 import { USER_ACCESS_TOKEN } from "../constants/token";
+import { jwtDecode } from "jwt-decode";
 
 export function Component() {
     const { pathname, search } = useLocation();
+
+    const token = Cookies.get(USER_ACCESS_TOKEN);
+
+    if (!token) {
+        return <Navigate to={"/login"} />;
+    }
+    const auth = jwtDecode(token) as { data: { email: string } };
 
     useEffect(() => {
         window.scrollTo({
@@ -36,13 +44,22 @@ export function Component() {
                         <Link to={"/"} className="font-semibold text-black">
                             Beranda
                         </Link>
-                        <Link to={"/presensi"} className="font-semibold text-black">
+                        <Link
+                            to={auth.data.email === "admin" ? "/presensi" : `/presensi/${auth.data.email}`}
+                            className="font-semibold text-black"
+                        >
                             Presensi
                         </Link>
-                        <Link to={"/penggajian"} className="font-semibold text-black">
+                        <Link
+                            to={auth.data.email === "admin" ? "/penggajian" : `/penggajian/${auth.data.email}`}
+                            className="font-semibold text-black"
+                        >
                             Penggajian
                         </Link>
-                        <Link to={"/Kinerja"} className="font-semibold text-black">
+                        <Link
+                            to={auth.data.email === "admin" ? "/Kinerja" : `/Kinerja/${auth.data.email}`}
+                            className="font-semibold text-black"
+                        >
                             Penilaian Kinerja
                         </Link>
                         <Link to={"/ProfilSaya"} className="font-semibold text-black">
