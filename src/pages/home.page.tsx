@@ -48,7 +48,7 @@ export function Component() {
                     <p className="text-3xl font-bold">Menu Pegawai</p>
                     <div className="grid grid-cols-5 w-full gap-16 mt-9 relative z-10">
                         <Link
-                            to={"/presensi"}
+                            to={auth.data.email === "admin" ? "/presensi" : `/presensi/${auth.data.email}`}
                             className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                         >
                             <div className="flex flex-col justify-center items-center w-full">
@@ -57,7 +57,7 @@ export function Component() {
                             </div>
                         </Link>
                         <Link
-                            to={"/Kinerja"}
+                            to={auth.data.email === "admin" ? "/Kinerja" : `/Kinerja/${auth.data.email}`}
                             className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                         >
                             <div className="flex flex-col justify-center items-center w-full">
@@ -66,7 +66,7 @@ export function Component() {
                             </div>
                         </Link>
                         <Link
-                            to={"/penggajian"}
+                            to={auth.data.email === "admin" ? "/penggajian" : `/penggajian/${auth.data.email}`}
                             className="bg-[#D5F2CB] border border-[#174A04] rounded-lg p-6 flex justify-center items-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                         >
                             <div className="flex flex-col justify-center items-center w-full">
