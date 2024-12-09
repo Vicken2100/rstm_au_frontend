@@ -82,7 +82,7 @@ export function Component(): JSX.Element {
                                                         className="inp-res"
                                                         type="text"
                                                         name="birthDate"
-                                                        placeholder="Tempat/Tanggal Lahir*"
+                                                        placeholder="Tanggal Lahir*"
                                                         value={formData.birthDate}
                                                         onChange={handleChange}
                                                     />
