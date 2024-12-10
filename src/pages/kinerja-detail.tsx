@@ -135,7 +135,7 @@ export function Component(): JSX.Element {
                     {/* Jika selectedData ada, tampilkan nama, jika tidak tampilkan pesan */}
                     <p className="font-bold text-2xl">
                         Penilaian kinerja:{" "}
-                        <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">Suryanto</span>{" "}
+                        <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">{username}</span>{" "}
                     </p>
                     <div className="flex w-full gap-1 justify-between">
                         <div className="">
