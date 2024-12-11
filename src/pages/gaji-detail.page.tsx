@@ -195,7 +195,7 @@ export function Component(): JSX.Element {
                         Penggajian:{" "}
                         <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">{username}</span>
                     </p>
-                    <div className="flex w-full gap-1 justify-start">
+                    <div className="flex w-full gap-1 justify-between">
                         <div className="">
                             <p>Berikut ini adalah rincian gaji anda.</p>
                         </div>
