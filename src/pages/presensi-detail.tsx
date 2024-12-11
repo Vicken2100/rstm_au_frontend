@@ -31,7 +31,7 @@ export function Component(): JSX.Element {
         };
 
         loadApi();
-    }, []);
+    }, [username, month]);
 
     useEffect(() => {
         const loadApi = async () => {
@@ -93,7 +93,6 @@ export function Component(): JSX.Element {
         <>
             <div className="bg-white">
                 <div className="w-full mt-16 px-5 h-screen relative">
-                    {/* Jika selectedData ada, tampilkan nama, jika tidak tampilkan pesan */}
                     <p className="font-bold text-2xl">
                         Presensi: <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">{username}</span>
                     </p>
@@ -163,6 +162,7 @@ export function Component(): JSX.Element {
                                                     window.location.reload();
                                                 }
                                             }}
+                                            disabled={item.information && item.information !== "-"} // Nonaktifkan jika sudah ada keterangan
                                         >
                                             <option value="-">-</option>
                                             {optionKeterangan.map((option) => (
