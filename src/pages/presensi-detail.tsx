@@ -162,7 +162,7 @@ export function Component(): JSX.Element {
                                                     window.location.reload();
                                                 }
                                             }}
-                                            disabled={item.information && item.information !== "-"} // Nonaktifkan jika sudah ada keterangan
+                                            disabled={item.version >= 2} // Nonaktifkan jika sudah ada keterangan
                                         >
                                             <option value="-">-</option>
                                             {optionKeterangan.map((option) => (
