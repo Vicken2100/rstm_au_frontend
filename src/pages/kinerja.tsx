@@ -84,7 +84,7 @@ export function Component(): JSX.Element {
                             <tbody className="bg-white">
                                 {data.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{index}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{index + 1}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             {item.userName}
                                         </td>
