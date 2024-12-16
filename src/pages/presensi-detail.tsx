@@ -83,33 +83,29 @@ export function Component(): JSX.Element {
 
     return (
         <>
-            <div className="bg-white">
-                <div className="w-full mt-16 px-5 h-screen relative">
-                    <p className="font-bold text-2xl">
+            <div className="bg-white min-h-screen flex flex-col">
+                <div className="flex-1 px-5 mt-16">
+                    <p className="font-bold text-2xl mb-4">
                         Presensi: <span className="bg-gray-300 border border-gray-500 p-1 rounded-md">{username}</span>
                     </p>
-                    <div className="flex w-full gap-1 justify-between">
-                        <div className="">
-                            <p>Berikut ini adalah rekapitulasi presensi untuk karyawan terkait.</p>
-                        </div>
-                        <div className="">
-                            <select
-                                className="rounded-lg border w-52 border-gray-500 p-1"
-                                value={month}
-                                onChange={(e) => setMonth(parseInt(e.target.value))}
-                            >
-                                {[...Array(12)].map((_, index) => (
-                                    <option key={index + 1} value={index + 1}>
-                                        {new Date(0, index).toLocaleString("id-ID", { month: "long" })}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="flex justify-between items-center mb-4">
+                        <p>Berikut ini adalah rekapitulasi presensi untuk karyawan terkait.</p>
+                        <select
+                            className="rounded-lg border w-52 border-gray-500 p-1"
+                            value={month}
+                            onChange={(e) => setMonth(parseInt(e.target.value))}
+                        >
+                            {[...Array(12)].map((_, index) => (
+                                <option key={index + 1} value={index + 1}>
+                                    {new Date(0, index).toLocaleString("id-ID", { month: "long" })}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Table */}
-                    <div className="overflow-x-auto mt-4">
-                        <table className="min-w-full table-auto border-collapse border border-gray-300 mx-auto">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full table-auto border-collapse border border-gray-300">
                             <thead className="bg-[#CEF6C0]">
                                 <tr>
                                     <th className="border border-gray-300 px-4 py-2 text-center">Tanggal Masuk</th>
@@ -122,9 +118,7 @@ export function Component(): JSX.Element {
                                 {data.map((item, index) => (
                                     <tr key={index}>
                                         <td className="border border-gray-300 px-4 py-2 text-center">{item.date}</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {item.start || "-"}
-                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.start || "-"}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">{item.end || "-"}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             <select
@@ -155,7 +149,7 @@ export function Component(): JSX.Element {
                         </table>
                     </div>
 
-                    <div className="absolute bottom-3 right-5">
+                    <div className="flex justify-end mt-4">
                         <button
                             onClick={handleExportPDF}
                             className="bg-[#174A04] rounded-lg px-3 py-1 border border-gray-500 text-white"
@@ -164,6 +158,7 @@ export function Component(): JSX.Element {
                         </button>
                     </div>
                 </div>
+
                 <Footer />
             </div>
         </>

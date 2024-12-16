@@ -92,7 +92,7 @@ export function Component(): JSX.Element {
                                         <td className="border border-gray-300 px-4 py-2 text-center">{item.lembur}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">{item.hadir}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {item.hadir + item.lembur + item.onTime}
+                                        {item.hadir + item.lembur + item.onTime}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             <Link
