@@ -5,6 +5,7 @@ import { UsersResult } from "../dto/users.dto";
 import { getListUsersApi } from "../api/users";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { Link } from "react-router-dom";
 
 export function Component() {
     const [items, setItems] = useState<ListResult<UsersResult>>({
@@ -41,12 +42,8 @@ export function Component() {
         });
         doc.text(`Laporan Users`, 10, 10);
 
-        // Spasi antara bonus dan tabel
-        doc.setFontSize(10);
-        doc.text("Detail Users:", 10, 40);
-
         autoTable(doc, {
-            startY: 45,
+            startY: 20,
             head: [
                 [
                     "No",
@@ -89,21 +86,21 @@ export function Component() {
                 cellPadding: 3,
             },
             columnStyles: {
-                0: { cellWidth: 15 }, // No
-                1: { cellWidth: 19 }, // Nama
-                2: { cellWidth: 19 }, // Jabatan
-                3: { cellWidth: 19 }, // Tanggal Masuk
-                4: { cellWidth: 19 }, // Tanggal Lahir
-                5: { cellWidth: 19 }, // Jenis Kelamin
-                6: { cellWidth: 19 }, // NIK
-                7: { cellWidth: 19 }, // No Telp
-                8: { cellWidth: 19 }, // Email
-                9: { cellWidth: 19 }, // Nama Bank
-                10: { cellWidth: 19 }, // Nomor Rekening
-                11: { cellWidth: 19 }, // Nama Pemegang Rekening
-                12: { cellWidth: 19 }, // Provinsi
-                13: { cellWidth: 19 }, // Kabupaten/Kota
-                14: { cellWidth: 19 }, // Kecamatan/Kelurahan
+                0: { cellWidth: 10 },
+                1: { cellWidth: 30 },
+                2: { cellWidth: 30 },
+                3: { cellWidth: 25 },
+                4: { cellWidth: 25 },
+                5: { cellWidth: 25 },
+                6: { cellWidth: 30 },
+                7: { cellWidth: 25 },
+                8: { cellWidth: 30 },
+                9: { cellWidth: 30 },
+                10: { cellWidth: 30 },
+                11: { cellWidth: 30 },
+                12: { cellWidth: 30 },
+                13: { cellWidth: 30 },
+                14: { cellWidth: 30 },
             },
             headStyles: {
                 fillColor: [66, 66, 66],
@@ -118,14 +115,6 @@ export function Component() {
             margin: { top: 20 },
             pageBreak: "auto",
             tableWidth: "auto",
-            didDrawPage: function (data) {
-                doc.setFontSize(8);
-                doc.text(
-                    "Halaman " + doc.getNumberOfPages(),
-                    data.settings.margin.left,
-                    doc.internal.pageSize.height - 10
-                );
-            },
         });
 
         doc.save(`Laporan_Users.pdf`);
@@ -133,11 +122,11 @@ export function Component() {
 
     return (
         <div className="bg-white">
-            <div className="w-full mt-16 px-5 h-screen relative">
+            <div className="w-full mt-16 px-5 pb-24"> {/* Tambahkan `pb-24` untuk memberi padding bawah */}
                 <p className="font-bold text-2xl">Data Karyawan</p>
 
-                <div className="overflow-x-auto">
-                    <table className="min-w-full mt-4 border-collapse border border-gray-300">
+                <div className="overflow-x-auto mt-4">
+                    <table className="min-w-full border-collapse border border-gray-300">
                         <thead className="bg-[#CEF6C0]">
                             <tr>
                                 <th className="border border-gray-300 px-4 py-2 text-center">ID</th>
@@ -154,78 +143,48 @@ export function Component() {
                                 <th className="border border-gray-300 px-4 py-2 text-center">Nama Pemegang Rekening</th>
                                 <th className="border border-gray-300 px-4 py-2 text-center">Provinsi</th>
                                 <th className="border border-gray-300 px-4 py-2 text-center">Kabupaten/Kota</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">
-                                    Kecamatan/ <br />
-                                    Kelurahan
-                                </th>
+                                <th className="border border-gray-300 px-4 py-2 text-center">Kecamatan/Kelurahan</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white">
                             {loading ? (
-                                <>
-                                    <tr aria-colspan={15}>
-                                        <p className="text center">loading...</p>
-                                    </tr>
-                                </>
+                                <tr>
+                                    <td colSpan={15} className="text-center py-4">Loading...</td>
+                                </tr>
                             ) : (
-                                <>
-                                    {items.items.map((item) => {
-                                        return (
-                                            <tr>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.xid}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.username}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.jabatan}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.dateIn}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.birthDate}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.isMale ? "Laki - laki" : "Perempuan"}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.nik}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.noTelp}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.email}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.namaBank}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.noRek}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.namaRekening}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.alamatProvinsi}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.alamatKota}
-                                                </td>
-                                                <td className="border border-gray-300 px-4 py-2 text-center">
-                                                    {item.alamatKecamatan}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </>
+                                items.items.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.xid}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.username}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.jabatan}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.dateIn}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.birthDate}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.isMale ? "Laki - laki" : "Perempuan"}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.nik}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.noTelp}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.email}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.namaBank}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.noRek}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.namaRekening}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.alamatProvinsi}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.alamatKota}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.alamatKecamatan}</td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                     </table>
                 </div>
-                <div className="absolute bottom-3 right-5">
+
+                <div className="flex justify-end mt-4">
+                    <button
+                        className="bg-[#174A04] rounded-lg px-3 py-1 border border-gray-500 text-white"
+                    >
+                        <Link to={"/registrasi"}>Daftarkan Akun Baru</Link>
+                    </button>
+                </div>
+
+                <div className="flex justify-end mt-4">
                     <button
                         onClick={handleExportPDF}
                         className="bg-[#174A04] rounded-lg px-3 py-1 border border-gray-500 text-white"

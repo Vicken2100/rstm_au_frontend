@@ -1,6 +1,6 @@
 import React from "react";
 import { IoPersonCircle } from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { login } from "../api/login";
 import { USER_ACCESS_TOKEN } from "../constants/token";
 import Cookies from "js-cookie";
@@ -55,9 +55,7 @@ export function Component() {
                                                 Masuk dengan akun untuk menelusuri semua fitur yang ada.
                                             </h1>
                                         </div>
-                                        <p className="text-center mt-3 font-bold">
-                                            Belum ada akun? <Link to={"/registrasi"}>Daftar</Link>
-                                        </p>
+                                        
                                         <div className="flex w-full justify-center mt-4">
                                             <div className="text-center w-full">
                                                 <input

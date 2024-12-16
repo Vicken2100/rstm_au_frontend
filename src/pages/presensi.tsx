@@ -8,15 +8,14 @@ import autoTable from "jspdf-autotable";
 import { View } from "lucide-react";
 
 export function Component(): JSX.Element {
-    const [data, setdata] = useState<AttendanceStats[]>([]);
+    const [data, setData] = useState<AttendanceStats[]>([]);
     const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
     const [jabatan, setJabatan] = useState<string | null>("");
 
     useEffect(() => {
         const loadApi = async () => {
             const response = await getStatsApi(month, jabatan);
-
-            setdata(response);
+            setData(response);
         };
 
         loadApi();
@@ -45,15 +44,11 @@ export function Component(): JSX.Element {
 
         // Tambahkan tabel menggunakan data
         autoTable(doc, {
-            head: [["No", "Nama", "Hadir", "Izin", "Sakit", "Cuti", "Alpa"]],
+            head: [["No", "Nama", "Hadir"]],
             body: data.map((item, index) => [
                 index + 1,
                 item.userName,
                 item.hadir,
-                item.izin,
-                item.sakit,
-                item.cuti,
-                item.alpha,
             ]),
         });
 
@@ -88,35 +83,25 @@ export function Component(): JSX.Element {
                     </select>
                 </div>
 
-                <table className="min-w-full mt-4 border-collapse border border-gray-300">
+                <table className="min-w-full mt-4 border-collapse border border-gray-300 mx-auto">
                     <thead className="bg-[#CEF6C0]">
                         <tr>
-                            <th className="border border-gray-300 px-4 py-2 text-left">No</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Nama</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Total Jumlah Hadir</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Total Jumlah Izin</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Total Jumlah Sakit</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Total Jumlah Cuti</th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">Total Jumlah Alpa</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center">No</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center">Nama</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center">Total Jumlah Hadir</th>
                             <th className="border border-gray-300 px-4 py-2 text-center">Rincian</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white">
                         {data.map((item, index) => (
                             <tr key={index}>
-                                <td className="border border-gray-300 px-4 py-2">{index}</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">{index + 1}</td>
                                 <td className="border border-gray-300 px-4 py-2">{item.userName}</td>
-                                <td className="border border-gray-300 px-4 py-2">{item.hadir}</td>
-                                <td className="border border-gray-300 px-4 py-2">{item.izin}</td>
-                                <td className="border border-gray-300 px-4 py-2">{item.sakit}</td>
-                                <td className="border border-gray-300 px-4 py-2">{item.cuti}</td>
-                                <td className="border border-gray-300 px-4 py-2">{item.alpha}</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">{item.hadir}</td>
                                 <td className="border border-gray-300 px-4 py-2 text-center">
                                     <Link
                                         to={`/presensi/${item.userName}`}
-                                        className=" flex justify-center
-                                        text-green-500
-                                        hover:text-blue-500 "
+                                        className="flex justify-center text-green-500 hover:text-blue-500"
                                     >
                                         <View size={25} />
                                     </Link>

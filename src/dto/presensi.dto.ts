@@ -17,9 +17,6 @@ export interface PresensiResult extends BaseResult {
 export interface AttendanceStats {
     userName: string;
     hadir: number;
-    sakit: number;
-    izin: number;
-    cuti: number;
     alpha: number;
     totalDays: number;
 }

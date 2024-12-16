@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PresensiResult } from "../dto/presensi.dto";
 import { UangMakanResult } from "../dto/uang-makan.dto";
 import { getUangMakanApi } from "../api/uang-makan";
-import { getPresensiApi, updateInformationApi, updateLocationApi } from "../api/presensi";
+import { getPresensiApi, updateLocationApi } from "../api/presensi";
 import { DefaultListPayload } from "../dto/common.dto";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -15,6 +15,7 @@ export function Component(): JSX.Element {
     const [data, setData] = useState<PresensiResult[]>([]);
     const [uangMakan, setUangMakan] = useState<UangMakanResult[]>([]);
     const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+    const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
     useEffect(() => {
         const loadApi = async () => {
@@ -27,7 +28,9 @@ export function Component(): JSX.Element {
                 },
             });
 
-            setData(response.items);
+            // Sort data by date (newest first)
+            const sortedData = response.items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            setData(sortedData);
         };
 
         loadApi();
@@ -43,27 +46,17 @@ export function Component(): JSX.Element {
         loadApi();
     }, []);
 
-    const monthOptions = [
-        { value: 1, label: "Januari" },
-        { value: 2, label: "Februari" },
-        { value: 3, label: "Maret" },
-        { value: 4, label: "April" },
-        { value: 5, label: "Mei" },
-        { value: 6, label: "Juni" },
-        { value: 7, label: "Juli" },
-        { value: 8, label: "Agustus" },
-        { value: 9, label: "September" },
-        { value: 10, label: "Oktober" },
-        { value: 11, label: "November" },
-        { value: 12, label: "Desember" },
-    ];
-
-    const optionKeterangan = [
-        { value: "hadir", label: "hadir" },
-        { value: "cuti", label: "cuti" },
-        { value: "izin", label: "izin" },
-        { value: "sakit", label: "sakit" },
-    ];
+    const handleUpdateLocation = async (xid: string, location: string, version: number) => {
+        if (selectedLocation === null) {
+            await updateLocationApi(xid, location, version);
+            setSelectedLocation(location);
+            setData((prevData) =>
+                prevData.map((item) =>
+                    item.xid === xid ? { ...item, location } : item
+                )
+            );
+        }
+    };
 
     const handleExportPDF = () => {
         const doc = new jsPDF();
@@ -73,7 +66,7 @@ export function Component(): JSX.Element {
 
         // Tambahkan tabel menggunakan data
         autoTable(doc, {
-            head: [["No", "Nama", "Tanggal", "Mulai", "Selesai", "Lokasi Kerja", "Keterangan"]],
+            head: [["No", "Nama", "Tanggal", "Mulai", "Selesai", "Lokasi Kerja"]],
             body: data.map((item, index) => [
                 index + 1,
                 item.userName,
@@ -81,12 +74,11 @@ export function Component(): JSX.Element {
                 item.start || "-",
                 item.end || "-",
                 item.location || "-",
-                item.information,
             ]),
         });
 
         // Simpan file PDF
-        doc.save(`Laporan_Presensi_${monthOptions.find((m) => m.value === month)?.label || ""}.pdf`);
+        doc.save(`Laporan_Presensi_${month}.pdf`);
     };
 
     return (
@@ -98,7 +90,7 @@ export function Component(): JSX.Element {
                     </p>
                     <div className="flex w-full gap-1 justify-between">
                         <div className="">
-                            <p>Berikut ini adalah rekapitulasi presensi dari karyawan yang Anda pilih.</p>
+                            <p>Berikut ini adalah rekapitulasi presensi untuk karyawan terkait.</p>
                         </div>
                         <div className="">
                             <select
@@ -106,76 +98,63 @@ export function Component(): JSX.Element {
                                 value={month}
                                 onChange={(e) => setMonth(parseInt(e.target.value))}
                             >
-                                {monthOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
+                                {[...Array(12)].map((_, index) => (
+                                    <option key={index + 1} value={index + 1}>
+                                        {new Date(0, index).toLocaleString("id-ID", { month: "long" })}
                                     </option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
-                    <table className="min-w-full mt-4 border-collapse border border-gray-300">
-                        <thead className="bg-[#CEF6C0]">
-                            <tr>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Tanggal Masuk</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Jam Mulai Kerja</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Jam Selesai Kerja</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Lokasi Kerja</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white">
-                            {data.map((item, index) => (
-                                <tr key={index}>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">{item.date}</td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
-                                        {item.start || "-"}
-                                    </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">{item.end || "-"}</td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
-                                        <select
-                                            className="rounded-lg border w-52 border-gray-500 p-1"
-                                            value={item.location || "-"}
-                                            onChange={async (e) => {
-                                                if (e.target.value !== "-") {
-                                                    await updateLocationApi(item.xid, e.target.value, item.version);
-                                                    window.location.reload();
-                                                }
-                                            }}
-                                        >
-                                            <option value="-">-</option>
-                                            {uangMakan.map((option) => (
-                                                <option key={option.location} value={option.location}>
-                                                    {option.location}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
-                                        <select
-                                            className="rounded-lg border w-52 border-gray-500 p-1"
-                                            value={item.information || "-"}
-                                            onChange={async (e) => {
-                                                if (e.target.value !== item.information) {
-                                                    await updateInformationApi(item.xid, e.target.value, item.version);
-                                                    window.location.reload();
-                                                }
-                                            }}
-                                            disabled={item.version >=2} // Nonaktifkan jika sudah ada keterangan
-                                        >
-                                            <option value="-">-</option>
-                                            {optionKeterangan.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
+                    {/* Table */}
+                    <div className="overflow-x-auto mt-4">
+                        <table className="min-w-full table-auto border-collapse border border-gray-300 mx-auto">
+                            <thead className="bg-[#CEF6C0]">
+                                <tr>
+                                    <th className="border border-gray-300 px-4 py-2 text-center">Tanggal Masuk</th>
+                                    <th className="border border-gray-300 px-4 py-2 text-center">Jam Mulai Kerja</th>
+                                    <th className="border border-gray-300 px-4 py-2 text-center">Jam Selesai Kerja</th>
+                                    <th className="border border-gray-300 px-4 py-2 text-center">Lokasi Kerja</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="bg-white">
+                                {data.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.date}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">
+                                            {item.start || "-"}
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.end || "-"}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">
+                                            <select
+                                                className="rounded-lg border w-52 border-gray-500 p-1"
+                                                value={item.location || "-"}
+                                                onChange={(e) =>
+                                                    handleUpdateLocation(
+                                                        item.xid,
+                                                        e.target.value,
+                                                        item.version
+                                                    )
+                                                }
+                                                disabled={
+                                                    item.version >= 2
+                                                } // Disable other rows
+                                            >
+                                                <option value="-">-</option>
+                                                {uangMakan.map((option) => (
+                                                    <option key={option.location} value={option.location}>
+                                                        {option.location}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div className="absolute bottom-3 right-5">
                         <button
                             onClick={handleExportPDF}

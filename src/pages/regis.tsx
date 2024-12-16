@@ -40,7 +40,7 @@ export function Component(): JSX.Element {
             alert("Berhasil Mengisi formulir");
             navigate("/");
         } catch {
-            alert("isi form dengan benar");
+            alert("Isi formulir dengan benar");
         }
     };
 
@@ -62,7 +62,7 @@ export function Component(): JSX.Element {
                             <div className="py-3 px-4">
                                 <div className="w-full">
                                     <p className="text-2xl font-bold">Registrasi Akun Pegawai</p>
-                                    <p>Silakan isi data di bawah ini</p>
+                                    <p>Silakan isi data di bawah ini.</p>
                                 </div>
                                 <form onSubmit={handleSubmit} className="w-full mt-7">
                                     <div className="mt-3">
@@ -95,7 +95,7 @@ export function Component(): JSX.Element {
                                                         <option value="" disabled hidden>
                                                             Pilih Jenis Kelamin
                                                         </option>
-                                                        <option value="laki">Laki-Laki</option>
+                                                        <option value="laki">Laki-laki</option>
                                                         <option value="perempuan">Perempuan</option>
                                                     </select>
                                                     <input
@@ -222,8 +222,8 @@ export function Component(): JSX.Element {
                                                         value={formData.pin || ""}
                                                         onChange={handleChange}
                                                     />
-                                                    <p className="text-sm text-end m-0">Masukkan Rangge Angka 1-99</p>
-                                                    <p>Pastikan Angka yang di isi tidak sama dengan Karyawan lain</p>
+                                                    <p className="text-sm text-end m-0">Masukkan Interval Angka 1-99. Contoh: 1</p>
+                                                    <p>Pastikan angka yang diisi tidak sama dengan karyawan lain.</p>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <button

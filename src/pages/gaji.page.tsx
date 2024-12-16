@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
-import { GajiResult } from "../dto/gaji.dto";
-import { getGaji } from "../api/gaji";
-import { DefaultListPayload } from "../dto/common.dto";
-import { Footer } from "../component/footer";
 import { Link } from "react-router-dom";
+import { GajiResult } from "../dto/gaji.dto";
+import { Footer } from "../component/footer";
+import { Eye } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { View } from "lucide-react";
 
 export function Component(): JSX.Element {
-    const [jabatan, setJabatan] = useState<string>("");
-    const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
     const [data, setData] = useState<GajiResult[]>([]);
     const [totals, setTotals] = useState({
         gajiPokok: 0,
@@ -20,6 +16,8 @@ export function Component(): JSX.Element {
         tunjanganKesehatan: 0,
         total: 0,
     });
+    const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+    const [jabatan, setJabatan] = useState<string>("");
 
     const monthOptions = [
         { value: 1, label: "Januari" },
@@ -45,10 +43,6 @@ export function Component(): JSX.Element {
         }).format(amount);
     };
 
-    const calculateTotal = (item: GajiResult): number => {
-        return item.gajiPokok + item.uangMakan + item.uangLembur + item.tunjanganKeluarga + item.tunjanganKesehatan;
-    };
-
     const calculateTotals = (items: GajiResult[]) => {
         const newTotals = items.reduce(
             (acc, item) => ({
@@ -57,7 +51,12 @@ export function Component(): JSX.Element {
                 uangLembur: acc.uangLembur + item.uangLembur,
                 tunjanganKeluarga: acc.tunjanganKeluarga + item.tunjanganKeluarga,
                 tunjanganKesehatan: acc.tunjanganKesehatan + item.tunjanganKesehatan,
-                total: acc.total + calculateTotal(item),
+                total: acc.total +
+                    item.gajiPokok +
+                    item.uangMakan +
+                    item.uangLembur +
+                    item.tunjanganKeluarga +
+                    item.tunjanganKesehatan,
             }),
             {
                 gajiPokok: 0,
@@ -72,39 +71,18 @@ export function Component(): JSX.Element {
         setTotals(newTotals);
     };
 
-    useEffect(() => {
-        const loadApi = async () => {
-            const response = await getGaji({
-                ...DefaultListPayload,
-                showAll: true,
-                filters: {
-                    month: month.toString(),
-                    jabatan: jabatan,
-                },
-            });
-
-            setData(response.items);
-            calculateTotals(response.items);
-        };
-
-        loadApi();
-    }, [month, jabatan]);
-
     const exportToPDF = () => {
         const doc = new jsPDF();
 
-        // Add title and period
+        // Add title
         doc.setFontSize(16);
         doc.text("Laporan Penggajian", 14, 15);
         doc.setFontSize(11);
         doc.text(`Periode: ${monthOptions[month - 1].label}`, 14, 25);
-        if (jabatan) {
-            doc.text(`Jabatan: ${jabatan}`, 14, 32);
-        }
 
-        // Create salary table
+        // Add table
         autoTable(doc, {
-            startY: 40,
+            startY: 35,
             head: [
                 [
                     "No",
@@ -114,7 +92,7 @@ export function Component(): JSX.Element {
                     "Uang Lembur",
                     "Tunjangan Keluarga",
                     "Tunjangan Kesehatan",
-                    "Total",
+                    "Gaji Total",
                 ],
             ],
             body: data.map((item, index) => [
@@ -125,11 +103,17 @@ export function Component(): JSX.Element {
                 formatCurrency(item.uangLembur),
                 formatCurrency(item.tunjanganKeluarga),
                 formatCurrency(item.tunjanganKesehatan),
-                formatCurrency(calculateTotal(item)),
+                formatCurrency(
+                    item.gajiPokok +
+                        item.uangMakan +
+                        item.uangLembur +
+                        item.tunjanganKeluarga +
+                        item.tunjanganKesehatan
+                ),
             ]),
             foot: [
                 [
-                    "Total",
+                    "",
                     "",
                     formatCurrency(totals.gajiPokok),
                     formatCurrency(totals.uangMakan),
@@ -139,34 +123,65 @@ export function Component(): JSX.Element {
                     formatCurrency(totals.total),
                 ],
             ],
-            theme: "grid",
-            styles: {
-                fontSize: 8,
-                cellPadding: 2,
-            },
-            headStyles: {
-                fillColor: [206, 246, 192],
-                textColor: [0, 0, 0],
-                fontStyle: "bold",
-            },
-            footStyles: {
-                fillColor: [23, 74, 4],
-                textColor: [255, 255, 255],
-                fontStyle: "bold",
-            },
         });
 
-        // Add summary
-        const currentY = (doc as any).lastAutoTable.finalY + 15;
-        doc.text(`Total Pengeluaran: ${formatCurrency(totals.total)}`, 14, currentY);
-
-        // Save PDF
-        const filename = jabatan
-            ? `Penggajian_${jabatan}_${monthOptions[month - 1].label}.pdf`
-            : `Penggajian_${monthOptions[month - 1].label}.pdf`;
-
-        doc.save(filename);
+        // Save the PDF
+        doc.save(`Laporan_Penggajian_${monthOptions[month - 1].label}.pdf`);
     };
+
+    useEffect(() => {
+        const loadApi = async () => {
+            if (process.env.NODE_ENV === "development") {
+                const dummyData: GajiResult[] = [
+                    {
+                        userName: "Audrey K",
+                        jabatan: "Sales",
+                        gajiPokok: 3700000,
+                        uangMakan: 500000,
+                        uangLembur: 100000,
+                        tunjanganKeluarga: 3700000,
+                        tunjanganKesehatan: 3700000,
+                        xid: "dummy-xid-1",
+                        updatedAt: new Date(2024, 10, 30).getTime(), // 30 November 2024
+                        createdAt: new Date(2024, 10, 1).getTime(),  // 1 November 2024
+                        modifiedBy: {
+                            xid: "admin-xid-1",
+                            username: "Admin",
+                        }, // Sesuai dengan tipe ModifiedBy
+                        version: 1,
+
+                    },
+                    {
+                        userName: "Suryanto",
+                        jabatan: "Sales",
+                        gajiPokok: 3700000,
+                        uangMakan: 250000,
+                        uangLembur: 100000,
+                        tunjanganKeluarga: 3700000,
+                        tunjanganKesehatan: 3700000,
+                        xid: "dummy-xid-1",
+                        updatedAt: new Date(2024, 10, 30).getTime(), // 30 November 2024
+                        createdAt: new Date(2024, 10, 1).getTime(),  // 1 November 2024
+                        modifiedBy: {
+                            xid: "admin-xid-1",
+                            username: "Admin",
+                        }, // Sesuai dengan tipe ModifiedBy
+                        version: 1,
+
+                    },
+
+                ];
+                console.log("Using dummy data");
+                setData(dummyData);
+                calculateTotals(dummyData);
+            } else {
+                console.log("Fetching data from API");
+                // Call your API here and set the data.
+            }
+        };
+
+        loadApi();
+    }, [month, jabatan]);
 
     return (
         <>
@@ -206,9 +221,7 @@ export function Component(): JSX.Element {
                                     <th className="border border-gray-300 px-4 py-2 text-center">Total Uang Makan</th>
                                     <th className="border border-gray-300 px-4 py-2 text-center">Total Uang Lembur</th>
                                     <th className="border border-gray-300 px-4 py-2 text-center">Tunjangan Keluarga</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-center">
-                                        Tunjangan Kesehatan
-                                    </th>
+                                    <th className="border border-gray-300 px-4 py-2 text-center">Tunjangan Kesehatan</th>
                                     <th className="border border-gray-300 px-4 py-2 text-center">Gaji Total</th>
                                     <th className="border border-gray-300 px-4 py-2 text-center">Rincian</th>
                                 </tr>
@@ -217,35 +230,27 @@ export function Component(): JSX.Element {
                                 {data.map((item, index) => (
                                     <tr key={index}>
                                         <td className="border border-gray-300 px-4 py-2 text-center">{index + 1}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{item.userName}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(item.gajiPokok)}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(item.uangMakan)}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(item.uangLembur)}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(item.tunjanganKeluarga)}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(item.tunjanganKesehatan)}</td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {item.userName}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(item.gajiPokok)}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(item.uangMakan)}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(item.uangLembur)}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(item.tunjanganKeluarga)}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(item.tunjanganKesehatan)}
-                                        </td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">
-                                            {formatCurrency(calculateTotal(item))}
+                                            {formatCurrency(
+                                                item.gajiPokok +
+                                                    item.uangMakan +
+                                                    item.uangLembur +
+                                                    item.tunjanganKeluarga +
+                                                    item.tunjanganKesehatan
+                                            )}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2 text-center">
                                             <Link
                                                 to={`/penggajian/${item.userName}`}
-                                                className=" flex justify-center
-                                        text-green-500
-                                        hover:text-blue-500 "
+                                                className="flex justify-center text-green-500 hover:text-blue-500"
                                             >
-                                                <View size={25} />
+                                                <Eye size={25} />
                                             </Link>
                                         </td>
                                     </tr>
@@ -253,41 +258,35 @@ export function Component(): JSX.Element {
                                 <tr>
                                     <td colSpan={2} className="bg-[#174A04]"></td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.gajiPokok)}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.uangMakan)}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.uangLembur)}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.tunjanganKeluarga)}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.tunjanganKesehatan)}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">
-                                        Total pengeluaran <br />
                                         {formatCurrency(totals.total)}
                                     </td>
                                     <td className="bg-[#174A04]"></td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <div className="absolute bottom-3 right-5">
-                        <button
-                            onClick={exportToPDF}
-                            className="bg-[#174A04] rounded-lg px-3 py-1 border border-gray-500 text-white"
-                        >
-                            Ekspor Sebagai PDF
-                        </button>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                onClick={exportToPDF}
+                                className="bg-green-900 text-white px-4 py-2 rounded-lg hover:bg-green-900"
+                            >
+                                Ekspor Sebagai PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <Footer />

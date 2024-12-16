@@ -19,3 +19,4 @@ export const deleteBonusApi = async (xid: string): Promise<string> => {
 
     return response.data.data;
 };
+
